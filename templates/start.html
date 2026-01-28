@@ -2,37 +2,43 @@
 
 {%- block stylesheet -%}
   <link rel="stylesheet" href='{{static_url("css/home.css")}}' type="text/css"/>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
 {%- endblock -%}
 
 {%- block main -%}
-{%- import "macros/table/config/workshop_manager.jinja" as config %}
-{%- import "macros/table/variables.jinja" as vars %}
-{%- set pagetype = vars.pagetype_workshopmanager %}
+{%- import "macros/table/config/home.jinja" as config %}
+{%- import "macros/table/variables.jinja" as vars with context %}
+{%- set pagetype = vars.pagetype_start %}
 
 {%- from "macros/table/table.jinja" import tables with context %}
-<input id="rowid-reload" data-collect="false" data-collect-static="true" style="display: none"/>
 
 {% macro description() %}
-  <h2>Workshop Manager</h2>
-  <p>Select the options users might be able to use during your workshop.</p>
-  <p>Use shift or ctrl to select multiple items. <a style="color:#fff" href="https://jupyterjsc.pages.jsc.fz-juelich.de/docs/jupyterjsc/" target="_">Click here for more information.</a></p>
+  <h2>Your server is starting up.</h2>
+  <p>You will be redirected automatically when it's ready for you.</p>
+  <p>If you want to update your configuration or create a new one, please go to the <a href="/hub/home" style="color: white; font-weight: bold;">configuration page</a>.</p>
 {% endmacro %}
 
 {{ tables(
   config.frontend_config,
   description
 ) }}
-
 {%- endblock -%}
 
 
 {%- block script -%}
-{%- import "macros/table/config/workshop_manager.jinja" as config %}
-{%- import "macros/table/variables.jinja" as vars %}
-{%- set pagetype = vars.pagetype_workshopmanager %}
+{%- import "macros/table/config/home.jinja" as config with context %}
+{%- import "macros/table/variables.jinja" as vars with context %}
+{%- set pagetype = vars.pagetype_start %}
 
 {%- import "macros/svgs.jinja" as svg -%}
-{%- set table_rows = db_workshops %}
+
+{%- set table_rows = {
+    spawner.name: frontendCollection.get("decrypted_user_options").get(spawner.name, spawner.user_options)
+} %}
+{%- set spawners = [spawner] %}
+
 <script>
   /* Jinja dependent functions:
   * Define get funtions to enable the use of jinja variables (supplied by the backend) within the JavaScript classes (otherwise they are not reachable)
@@ -40,13 +46,13 @@
   function getFrontendCollection() {
     return {{ frontendCollection | tojson}} || {};
   }
+  function getFrontendConfig() {
+    return {{ config.frontend_config | tojson}} || {};
+  }
   function getTableRows() {
     return {{ table_rows | tojson }} || {};
   }
-  function getFirstRowId() {
-    return "{{ vars.first_row_id }}";
-  }
-  {%- include "macros/table/config/workshop_manager_js.jinja" %}
+  {%- include "macros/table/config/home_js.jinja" %}
   function getSvg(name) {
     if ( name === "check" ) {
       return `{{ svg.check_svg | safe }}`;
@@ -102,31 +108,44 @@
     return {{ auth_state | default({}) | tojson }};
   }
   function getWorkshopOptions() {
-    {%- set ret = {} %}
-    {%- for key, value in db_workshops.items() if key != vars.first_row_id %}
-      {%- set _ = ret.update({key: value}) %}
-    {%- endfor %}
-    return {{ ret | default({}) | tojson }};
+    return {{ workshop_options | default({}) | tojson }};
   }
   function isFirstRow(rowId) {
     return rowId === "{{ vars.first_row_id }}";
   }
+
   function getSpawnerUserOptions() {
-    return {};
+    return {{ {spawner.name: spawner.user_options} | tojson | safe }};
   }
-  function getSpawner(rowId) {
-    const workshopMap = {};
-    {%- for workshop_name, workshop_options in db_workshops.items() %}
-      {%- if workshop_name != vars.first_row_id %}
-        workshopMap["{{ workshop_name }}"] = {
-          decrypted_user_options: {{ workshop_options.get("user_options") | tojson }},
-          user_options: {{ workshop_options.get("user_options") | tojson }},
-          instructor_user_id: "{{ workshop_options.get("instructor_user_id") }}",
-          workshop_id: "{{ workshop_options.get("workshop_id") }}"
-        }
+
+  function getSpawner(rowId) {    
+    let spawnerMap = {};
+      {%- if spawner.user_options and spawner.name %}
+        {%- if user.spawners.get(spawner.name) and user.spawners.get(spawner.name).user_options.get("option") %}
+          {%- set s = user.spawners.get(spawner.name) %}
+        {%- else %}
+          {%- set s = spawner %}
+        {%- endif %}
+        {%- set events = s.events if s.events is iterable and s.events is not string else [] %}
+        {%- set last_event = events | last %}
+        {%- set progress = 0 %}
+        {%- if s.ready %}
+          {%- set progress = 100 %}
+        {%- elif s.active and last_event is mapping %}
+          {%- set progress = last_event.get("progress", 0) %}
+        {%- endif %}
+        spawnerMap = {
+          decrypted_user_options: {{ frontendCollection.get("decrypted_user_options").get(s.name, s.user_options) | tojson }},
+          user_options: {{ s.user_options | tojson }},
+          active: {{ s.active | tojson }},
+          ready: {{ s.ready | tojson }},
+          failed: {{ s.failed | default(false) | tojson }},
+          events: {{ events | default([]) | tojson }},
+          last_event: {{ last_event | default({}) | tojson }},
+          progress: {{ progress }}
+        };
       {%- endif %}
-    {%- endfor %}
-    return workshopMap[rowId] || {};
+    return spawnerMap;
   }
   function pageType(name) {
     if ( name === "home" ) {

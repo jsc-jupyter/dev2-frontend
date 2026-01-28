@@ -109,7 +109,7 @@ require(["jquery"], function (
         urlSuffix = "";
         tooltipTitle = "Number of active users in the last 24 hours";
     } else if (system === "jsccloud") {
-        systemSvg = serversSvg;
+        systemSvg = linkSvg;
         urlSuffix = "var-system=JSC-Cloud";
         tooltipTitle = "Number of active servers";
     } else {
@@ -163,12 +163,12 @@ require(["jquery"], function (
     let ampelHtml = "";
     if ( ["JUPYTER", "JUWELS", "JURECA", "JEDI", "JUSUF", "DEEP", "JSCCLOUD"].includes(system) ) {
       let imgSrc = `${staticUrl}/images/footer/systems/${systemLower}.svg?v=${imgVersion}`;
-      checkImageExists(imgSrc, systemLower, function(exists) {
-        if (!exists) {
-          let newImgSrc = `${staticUrl}/images/footer/templates/0.svg?v=${imgVersion}`;
-          $(`#ampel-${systemLower} .ampel-img`).attr("src", newImgSrc);          
-        }
-      });
+      // checkImageExists(imgSrc, systemLower, function(exists) {
+      //   if (!exists) {
+      //     let newImgSrc = `${staticUrl}/images/footer/templates/0.svg?v=${imgVersion}`;
+      //     $(`#ampel-${systemLower} .ampel-img`).attr("src", newImgSrc);          
+      //   }
+      // });
       
       ampelHtml = `
         <div id="ampel-${systemLower}" class="text-center"
@@ -180,6 +180,24 @@ require(["jquery"], function (
                 href="https://status.jsc.fz-juelich.de/services/${systemId}" 
                 target="_blank" 
                 class="align-middle" 
+                data-bs-toggle="tooltip"
+                data-bs-placement="top">
+                ${displayName}
+            </a>
+            ${numberOfUsers(systemLower)}
+        </div>`;
+    } else if ( ["JSCCLOUD"].includes(system) ) {
+      let imgSrc = `${staticUrl}/images/footer/templates/0.svg?v=${imgVersion}`;
+      ampelHtml = `
+        <div id="ampel-${systemLower}" class="text-center"
+            data-system=${system}
+            data-systemlower=${systemLower}
+            >
+            <img class="ampel-img" src="${imgSrc}" />
+            <a id="ampel-${systemLower}-tooltip"
+                href="https://status.jsc.fz-juelich.de/services/${systemId}"
+                target="_blank"
+                class="align-middle"
                 data-bs-toggle="tooltip"
                 data-bs-placement="top">
                 ${displayName}
@@ -302,7 +320,7 @@ require(["jquery"], function (
       if (systemInfo.incident) {
         $(`#ampel-${system.toLowerCase()}-tooltip`)
           .attr('data-bs-original-title', systemInfo.incident);
-        if ( systemInfo.health > incidentsThresholdInteractiveFooter ) {
+        if ( systemInfo.health >= incidentsThresholdInteractiveFooter ) {
           const _system = incidentsmapping[system] ?? system;
           if ( !newMaintenanceList.includes(_system) ) {
             newMaintenanceList.push(_system);
@@ -332,6 +350,10 @@ require(["jquery"], function (
         case 'JSC-Cloud':
           $(`#jsccloud-users`).html(usercount['total']);
           systems['jsccloud'] = true;
+          break;
+        case 'deNBI-Cloud':
+          $(`#denbicloud-users`).html(usercount['total']);
+          systems['denbicloud'] = true;
           break;
         default:
           $(`#${system.toLowerCase()}-users`).html(usercount['total']);
