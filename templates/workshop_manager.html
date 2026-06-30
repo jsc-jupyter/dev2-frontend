@@ -5,6 +5,9 @@
 {%- endblock -%}
 
 {%- block main -%}
+{%- from "check_aup.html" import aup_check with context -%}
+{{ aup_check(frontendCollection.get("aup_name"), "home") }}
+
 {%- import "macros/table/config/workshop_manager.jinja" as config %}
 {%- import "macros/table/variables.jinja" as vars %}
 {%- set pagetype = vars.pagetype_workshopmanager %}
@@ -14,8 +17,8 @@
 
 {% macro description() %}
   <h2>Workshop Manager</h2>
-  <p>Select the options users might be able to use during your workshop.</p>
-  <p>Use shift or ctrl to select multiple items. <a style="color:#fff" href="https://jupyterjsc.pages.jsc.fz-juelich.de/docs/jupyterjsc/" target="_">Click here for more information.</a></p>
+  <p>Create and manage workshops with <strong>predefined environments</strong>, <strong>shared storage</strong> (cloud), and <strong>controlled access</strong> for <strong>tutors</strong> and <strong>participants</strong>.</p>
+  <p>For detailed explanations and best practices, see the workshop <a style="color:#e6f2ff; text-decoration: underline;" target="_blank" href="https://jupyterjsc.pages.jsc.fz-juelich.de/docs/jupyterjsc/workshops/">documentation</a>.</p>
 {% endmacro %}
 
 {{ tables(

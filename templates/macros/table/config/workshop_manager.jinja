@@ -78,7 +78,8 @@
                   }
                 },
                 "trigger": {
-                  "userlist": "wmTriggerTutorList"
+                  "userlist": "wmTriggerTutorList",
+                  "system": "wmTriggerTutorList"
                 },
                 "label": {
                   "type": "texticoncheckbox",
@@ -101,7 +102,8 @@
                   }
                 },
                 "trigger": {
-                  "tutorlist": "wmTriggerTutorServerAccess"
+                  "tutorlist": "wmTriggerTutorServerAccess",
+                  "system": "wmTriggerTutorServerAccess"
                 },
                 "label": {
                   "type": "texticon",
@@ -123,7 +125,8 @@
                   }
                 },
                 "trigger": {
-                  "userlist": "wmTriggerStorageRW"
+                  "userlist": "wmTriggerStorageRW",
+                  "system": "wmTriggerStorageRW"
                 },
                 "label": {
                   "type": "texticon",
@@ -144,6 +147,9 @@
                     "show": true,
                     "enabled": false
                   }
+                },
+                "trigger": {
+                  "system": "wmTriggerCreditRequest"
                 },
                 "label": {
                   "type": "texticon",
@@ -181,13 +187,28 @@
                   "type": "buttons",
                   "options": {
                     "buttons": [
+                      "reset",                      
                       "delete",
+                      "share",
                       "save"
                     ],
+                    "share": {
+                      "text": "Share",
+                      "trigger": "wmTriggerButtonShare",
+                      "firstRow": false,
+                      "alignRight": true
+                    },
                     "save": {
                       "trigger": "wmTriggerButtonSave",
                       "firstRow": false,
                       "alignRight": false
+                    },
+                    "reset": {
+                      "firstRow": false,
+                      "trigger": "wmTriggerButtonReset",
+                      "options": {
+                        "fillingOrder": ["option", "system", "account", "project", "partition", "flavor", "privaterepo"]
+                      }
                     },
                     "delete": {
                       "firstRow": false,
@@ -453,7 +474,7 @@
                   "type": "text",
                   "options": {
                     "group": "storage",
-                    "enabled": false,
+                    "enabled": true,
                     "placeholder": "/home/jovyan/work",
                     "value": "/home/jovyan/work",
                     "pattern": "^\\/(?:[^\\/\\0]+\\/)*[^\\/\\0]*$"
@@ -468,7 +489,8 @@
                 },
                 "dependency": {
                   "option": [
-                    "custom"
+                    "custom",
+                    "repo2docker"
                   ]
                 }
               },
