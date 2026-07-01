@@ -1,6 +1,13 @@
 {% extends "page.html" %}
 {%- block stylesheet -%}
-  <link rel="stylesheet" href='{{static_url("css/legal.css")}}' type="text/css" />
+<link rel="stylesheet"
+            href="{{ static_url('css/style.min.css') }}"
+            type="text/css" />
+  <link rel="stylesheet"
+        href="{{ static_url('js/assets/style.css') }}"
+        type="text/css" />  
+<link rel="stylesheet" href='{{static_url("css/legal.css")}}' type="text/css" />
+  
 {%- endblock -%}
 
 {% block main %}
@@ -59,7 +66,7 @@
                 {% endfor %}
               </div>
               <p>Version: {{ content.version }}<br>Date: {{ content.date }}</p>
-              {% if version == aup_version %}
+              {% if version == aup_name %}
               <form id="aup-form" data-version="{{ version }}" role="form">
                 {% if xsrf_token %}
                 <input type="hidden" name="_xsrf" value="{{ xsrf_token }}" />
