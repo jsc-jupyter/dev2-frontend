@@ -7,7 +7,7 @@
   <link rel="stylesheet"
         href="{{ static_url('js/assets/style.css') }}"
         type="text/css" />  
-<link rel="stylesheet" href='{{static_url("css/login.css")}}' type="text/css" />
+<link rel="stylesheet" href='{{ static_url("css/login.css") }}' type="text/css" />
 {%- endblock -%}
 
 
@@ -40,36 +40,37 @@
 {%- endmacro -%}
 
 {%- block main -%}
-<div class="row g-0 h-100 justify-content-center">
-  <div id="login-background" class="col-12 flex-column d-flex justify-content-center align-items-center h-100">
-    <div class="container d-flex border shadow rounded-3 bg-light py-5">
-      <div class="row g-0 justify-content-center w-100">
+<main class="page-main">
+<div class="login-row">
+  <div id="login-background" class="login-background">
+    <div class="login-card">
+      <div class="login-card-row">
         <!-- Left column -->
-        <div id="accounts-login-div" class="d-flex col-md-7 justify-content-center align-items-center ps-5 pe-1">
-          <div class="row g-0 w-100 d-flex justify-content-center align-items-center">
-            <p class="fs-5 text-dark ps-3">
+        <div id="accounts-login-div" class="accounts-login-div">
+          <div class="accounts-login-inner">
+            <div class="accounts-login-text">
               Sign in using one of the following accounts 
               <!-- Logos -->
-              <ul class="list-group list-group-flush my-2">
+              <ul class="accounts-login-list">
                 {{list_item("jsc-login", "images/pages/login/Logo_FZ_Juelich_jsc.png", alt="JSC-Account")}}
 
                 {{list_item("helmholz-login", "images/pages/login/Helmholz_AAI_ID.png", alt="Helmholz AAI ID")}}
               
                 {#- {{list_item("nfdi-login", "images/pages/login/nfdi_rgb_dark.png", alt="NFDI Login")}} #}
               </ul>
-            </p>
+            </div>
           </div>
         </div>
         <!-- Right column -->
-        <div id="button-login-div" class="d-flex col h-100 px-5">
-          <div class="row g-0 d-flex w-100">
-            <div class="d-flex justify-content-center align-items-center pt-5">
-              <a id="btn-login" class="btn btn-primary shadow btn-lg p-4" role="button">
+        <div id="button-login-div" class="button-login-div">
+          <div class="button-login-inner">
+            <div class="btn-login-wrapper">
+              <a id="btn-login" class="btn-login" role="button">
                 <!-- <img src='{{static_url("images/pages/login/User.svg", include_version=False) }}'/> -->
                 Sign In
               </a>
             </div>
-            <p class="fs-6 fw-light text-dark align-self-end text-center">No account yet? 
+            <p class="help-text">No account yet? 
               <a href="https://jupyterjsc.pages.jsc.fz-juelich.de/docs/jupyterjsc/authentication/" target="_blank">
                 Help 
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle-fill" viewBox="0 0 16 16">
@@ -83,6 +84,7 @@
     </div>
   </div>
 </div>
+</main>
 {%- endblock -%}
 
 {%- block script -%}

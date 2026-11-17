@@ -115,7 +115,7 @@
     <div style="height: 100% !important; display: flex; flex-direction: column;">
       {% block nav_bar %}
         <div id="react-header-hook">
-          <script type="module" defer="defer" src="../static/js/header.js"></script>
+          <script type="module" defer="defer" src="{{ static_url("js/header.js") }}"></script>
         </div>
       {% endblock nav_bar %}
       {% block announcement %}
@@ -127,7 +127,7 @@
       {% endblock main %}
       {% block footer %}
         <div id="react-footer-hook">
-          <script type="module" defer="defer" src="../static/js/footer.js"></script>
+          <script type="module" defer="defer" src="{{ static_url("js/footer.js") }}"></script>
         </div>
       {% endblock footer %}
       {% call modal('Error', btn_label='OK') %}

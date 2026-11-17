@@ -26,6 +26,9 @@
   window.getFrontendConfig = function() {
     return {{ config.frontend_config | tojson }} || {};
   }
+  function getWorkshopOptions() {
+    return {{ workshop_options | default({}) | tojson }};
+  }
 </script>
 {% endblock script %}
 
